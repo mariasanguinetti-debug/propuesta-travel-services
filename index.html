@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jeeves — Propuesta</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C96A;
+      --gold-pale: #FDF3D7;
+      --dark: #0A0A0A;
+      --dark2: #141414;
+      --dark3: #1E1E1E;
+      --dark4: #2A2A2A;
+      --gray: #6B7280;
+      --gray-light: #9CA3AF;
+      --white: #FFFFFF;
+      --off-white: #F9F9F7;
+      --border: rgba(255,255,255,0.08);
+      --usdc: #2775CA;
+      --usdt: #26A17B;
+      --kd-blue: #2E6BFF;
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Helvetica, Arial, sans-serif;
+      background: var(--off-white);
+      color: #111;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Typography ── */
+    h1 { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; }
+    h2 { font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 800; line-height: 1.15; letter-spacing: -0.025em; }
+    h3 { font-size: 1.25rem; font-weight: 700; }
+    h4 { font-size: 1rem; font-weight: 600; }
+    p { color: #444; }
+    em { font-style: normal; color: var(--gold); }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #E5E7EB;
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 1rem; }
+    .nav-brand .jeeves-logo {
+      font-size: 1.3rem; font-weight: 900; letter-spacing: -0.04em;
+      background: linear-gradient(135deg, #0A0A0A 0%, #444 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-divider { width: 1px; height: 24px; background: #D1D5DB; }
+    .nav-client { font-size: 0.85rem; font-weight: 700; color: var(--kd-blue); letter-spacing: 0.02em; }
+    .nav-links { display: flex; gap: 0.5rem; }
+    .nav-links a {
+      font-size: 0.8rem; font-weight: 500; color: #555;
+      text-decoration: none; padding: 0.4rem 0.75rem;
+      border-radius: 6px; transition: all 0.2s;
+    }
+    .nav-links a:hover { background: #F3F4F6; color: #111; }
+    .nav-cta {
+      background: var(--dark); color: var(--white);
+      font-size: 0.82rem; font-weight: 600;
+      padding: 0.5rem 1.1rem; border-radius: 8px;
+      text-decoration: none; transition: background 0.2s;
+    }
+    .nav-cta:hover { background: #333; }
+
+    /* ── Section Wrapper ── */
+    .section { padding: 6rem 2rem; }
+    .section.dark { background: var(--dark); color: var(--white); }
+    .section.dark p { color: var(--gray-light); }
+    .section.dark-alt { background: var(--dark2); color: var(--white); }
+    .section.dark-alt p { color: var(--gray-light); }
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    .section-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      background: rgba(201,168,76,0.12); color: var(--gold);
+      border: 1px solid rgba(201,168,76,0.3);
+      padding: 0.35rem 0.85rem; border-radius: 999px; margin-bottom: 1.25rem;
+    }
+    .section-badge.light { background: rgba(201,168,76,0.08); }
+
+    /* ── Hero ── */
+    #sec-hero {
+      background: var(--dark);
+      padding: 6rem 2rem 5rem;
+      color: var(--white);
+      position: relative; overflow: hidden;
+    }
+    #sec-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 80% 50%, rgba(201,168,76,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .hero-label {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1rem;
+    }
+    .hero-title { color: var(--white); margin-bottom: 1.25rem; }
+    .hero-title em { color: var(--gold); }
+    .hero-subtitle { font-size: 1.1rem; color: #9CA3AF; margin-bottom: 2.5rem; line-height: 1.7; }
+    .hero-stats { display: flex; gap: 2rem; margin-top: 2.5rem; flex-wrap: wrap; }
+    .hero-stat { text-align: left; }
+    .hero-stat .num { font-size: 2rem; font-weight: 900; color: var(--gold); letter-spacing: -0.03em; }
+    .hero-stat .lbl { font-size: 0.75rem; color: #6B7280; font-weight: 500; margin-top: 0.15rem; }
+    .hero-cta-group { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--gold); color: var(--dark);
+      font-weight: 700; font-size: 0.9rem;
+      padding: 0.85rem 1.8rem; border-radius: 10px;
+      text-decoration: none; transition: all 0.2s;
+      display: inline-block; letter-spacing: -0.01em;
+    }
+    .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .btn-ghost {
+      color: var(--gray-light); font-weight: 500; font-size: 0.9rem;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;
+      transition: color 0.2s;
+    }
+    .btn-ghost:hover { color: var(--white); }
+
+    /* Card visual — Jeeves Elite */
+    .hero-visual { position: relative; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+    .jcard {
+      width: 100%; max-width: 470px; aspect-ratio: 1.586;
+      border-radius: 24px; padding: 1.9rem 2.1rem;
+      background: linear-gradient(125deg, #0D0D0D 0%, #1B1B1B 48%, #2B2412 100%);
+      border: 1px solid rgba(201,168,76,0.35);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03) inset;
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: space-between;
+      transform: rotate(-2.5deg);
+    }
+    .jcard::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 55% 70% at 82% 12%, rgba(201,168,76,0.22) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .jcard::after {
+      content: '';
+      position: absolute; top: -60%; left: -20%;
+      width: 55%; height: 220%;
+      background: linear-gradient(100deg, transparent 0%, rgba(255,255,255,0.045) 45%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.045) 55%, transparent 100%);
+      transform: rotate(12deg);
+      pointer-events: none;
+    }
+    .jcard-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .jcard-logo { font-size: 1.45rem; font-weight: 900; letter-spacing: -0.04em; color: var(--white); }
+    .jcard-elite {
+      font-size: 0.68rem; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase;
+      background: linear-gradient(135deg, var(--gold) 0%, #E8C96A 55%, #A9863A 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      border: 1px solid rgba(201,168,76,0.45);
+      padding: 0.32rem 0.8rem; border-radius: 999px;
+    }
+    .jcard-mid { display: flex; align-items: center; gap: 1rem; }
+    .jcard-chip {
+      width: 48px; height: 36px; border-radius: 7px;
+      background: linear-gradient(135deg, #E8C96A 0%, #C9A84C 45%, #9A7B32 100%);
+      position: relative; flex-shrink: 0;
+    }
+    .jcard-chip::before {
+      content: '';
+      position: absolute; inset: 6px;
+      border: 1px solid rgba(60,45,10,0.55); border-radius: 4px;
+    }
+    .jcard-chip::after {
+      content: '';
+      position: absolute; top: 50%; left: 0; right: 0; height: 1px;
+      background: rgba(60,45,10,0.55);
+    }
+    .jcard-wave { font-size: 1.2rem; color: rgba(255,255,255,0.55); transform: rotate(90deg); }
+    .jcard-number {
+      font-size: clamp(1.05rem, 2.2vw, 1.35rem); font-weight: 600; color: #E5E7EB;
+      letter-spacing: 0.14em; font-variant-numeric: tabular-nums;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+    }
+    .jcard-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
+    .jcard-holder .lbl, .jcard-exp .lbl {
+      font-size: 0.55rem; letter-spacing: 0.18em; text-transform: uppercase; color: #6B7280; margin-bottom: 0.2rem;
+    }
+    .jcard-holder .val { font-size: 0.95rem; font-weight: 700; color: var(--white); letter-spacing: 0.08em; text-transform: uppercase; }
+    .jcard-exp .val { font-size: 0.85rem; font-weight: 600; color: #D1D5DB; letter-spacing: 0.08em; }
+    .jcard-company { font-size: 0.95rem; font-weight: 800; letter-spacing: 0.06em; color: var(--gold); }
+    .jcard-caption { font-size: 0.78rem; color: #6B7280; text-align: center; }
+    .jcard-caption strong { color: var(--gold); font-weight: 700; }
+
+    /* ── Grid Layouts ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+
+    /* ── Feature Cards ── */
+    .feat-card {
+      background: var(--dark3); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.75rem;
+    }
+    .feat-card-light {
+      background: var(--white); border: 1px solid #E5E7EB;
+      border-radius: var(--radius); padding: 1.75rem;
+    }
+    .feat-icon { font-size: 2rem; margin-bottom: 1rem; }
+    .feat-card h4 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.5rem; }
+    .feat-card p { font-size: 0.85rem; line-height: 1.65; }
+    .feat-card-light h4 { font-size: 1rem; font-weight: 700; color: #111; margin-bottom: 0.5rem; }
+    .feat-card-light p { font-size: 0.85rem; line-height: 1.65; color: #555; }
+
+    /* ── Section Header ── */
+    .sec-header { margin-bottom: 3rem; }
+    .sec-header h2 em { color: var(--gold); }
+    .sec-header p { font-size: 1.05rem; margin-top: 0.75rem; max-width: 640px; }
+    .sec-header.center { text-align: center; }
+    .sec-header.center p { margin-left: auto; margin-right: auto; }
+
+    /* ── Comparison Table ── */
+    .compare-table { width: 100%; border-collapse: collapse; margin-top: 2rem; }
+    .compare-table th {
+      padding: 1rem 1.25rem; text-align: left;
+      font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+      color: #9CA3AF; border-bottom: 1px solid var(--border);
+    }
+    .compare-table th:not(:first-child) { text-align: center; }
+    .compare-table td {
+      padding: 1rem 1.25rem; font-size: 0.88rem; color: #D1D5DB;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: middle;
+    }
+    .compare-table td:not(:first-child) { text-align: center; }
+    .compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .compare-table .col-jeeves { background: rgba(201,168,76,0.06); }
+    .compare-table th.col-jeeves { color: var(--gold); }
+    .check { color: #34D399; font-size: 1.1rem; }
+    .cross { color: #F87171; font-size: 1.1rem; }
+    .neutral { color: #9CA3AF; }
+
+    /* ── Calculator ── */
+    .calc-wrapper {
+      background: var(--white); border-radius: 20px;
+      border: 1px solid #E5E7EB; overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    .calc-header {
+      background: var(--dark); padding: 1.5rem 2rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    }
+    .calc-header h3 { color: var(--white); font-size: 1rem; }
+    .calc-header .badge {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em;
+      background: rgba(201,168,76,0.2); color: var(--gold);
+      border: 1px solid rgba(201,168,76,0.4);
+      padding: 0.25rem 0.65rem; border-radius: 999px;
+    }
+    .calc-body { padding: 2rem; }
+    .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .calc-section-title {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--gray); margin-bottom: 1rem;
+      padding-bottom: 0.5rem; border-bottom: 1px solid #E5E7EB;
+    }
+    .calc-field { margin-bottom: 1.25rem; }
+    .calc-field label { font-size: 0.82rem; font-weight: 600; color: #374151; display: block; margin-bottom: 0.4rem; }
+    .calc-field .hint { font-size: 0.72rem; color: var(--gray); margin-top: 0.25rem; }
+    .calc-input-wrap { position: relative; }
+    .calc-input-wrap .prefix {
+      position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);
+      font-size: 0.85rem; font-weight: 600; color: var(--gray);
+    }
+    .calc-input-wrap .suffix {
+      position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+      font-size: 0.75rem; color: var(--gray);
+    }
+    input[type="number"], input[type="text"], select {
+      width: 100%; padding: 0.65rem 0.9rem;
+      border: 1.5px solid #E5E7EB; border-radius: 8px;
+      font-size: 0.9rem; font-family: inherit;
+      background: #FAFAFA; color: #111;
+      transition: border-color 0.2s;
+      -moz-appearance: textfield;
+    }
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input[type="number"]:focus, select:focus { outline: none; border-color: var(--gold); background: #fff; }
+    .has-prefix input { padding-left: 2rem; }
+    .has-suffix input { padding-right: 3.5rem; }
+    .editable { background: #FFFBEF !important; border-color: #E8C96A !important; }
+
+    .calc-results {
+      background: var(--dark); border-radius: 14px;
+      padding: 1.75rem; margin-top: 1.5rem;
+    }
+    .calc-results h4 { color: var(--white); margin-bottom: 1.25rem; font-size: 0.95rem; }
+    .result-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .result-row:last-child { border-bottom: none; }
+    .result-label { font-size: 0.82rem; color: #9CA3AF; }
+    .result-value { font-size: 0.9rem; font-weight: 700; color: var(--white); }
+    .result-row.highlight { background: rgba(201,168,76,0.08); margin: 0 -1rem; padding: 0.75rem 1rem; border-radius: 8px; }
+    .result-row.highlight .result-label { color: var(--gold); font-weight: 600; }
+    .result-row.highlight .result-value { color: var(--gold); font-size: 1.05rem; }
+    .result-row.total { padding-top: 1rem; margin-top: 0.5rem; }
+    .result-row.total .result-label { color: var(--white); font-weight: 700; font-size: 0.9rem; }
+    .result-row.total .result-value { font-size: 1.3rem; color: var(--gold); }
+
+    /* ── Timeline / Flow ── */
+    .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; position: relative; }
+    .flow::before {
+      content: '';
+      position: absolute; top: 28px; left: 12.5%; right: 12.5%;
+      height: 2px; background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    }
+    .flow-step { text-align: center; padding: 0 1rem; }
+    .flow-dot {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--dark3); border: 2px solid var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem; font-size: 1.4rem; position: relative; z-index: 1;
+    }
+    .flow-step h4 { font-size: 0.88rem; color: var(--white); margin-bottom: 0.4rem; }
+    .flow-step p { font-size: 0.78rem; color: #6B7280; }
+    .flow-time { font-size: 0.7rem; color: var(--gold); font-weight: 700; margin-top: 0.4rem; }
+
+    /* ── CTA Section ── */
+    #sec-cta { background: var(--dark); padding: 6rem 2rem; }
+    .cta-card {
+      background: linear-gradient(135deg, #1A1A1A 0%, #222 100%);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 24px; padding: 4rem;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .cta-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(201,168,76,0.1) 0%, transparent 70%);
+    }
+    .cta-card h2 { color: var(--white); position: relative; z-index: 1; }
+    .cta-card p { color: #9CA3AF; font-size: 1.05rem; margin-top: 0.75rem; position: relative; z-index: 1; }
+    .contact-card {
+      display: inline-flex; align-items: center; gap: 1.5rem;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px; padding: 1.5rem 2.5rem;
+      margin-top: 2.5rem; position: relative; z-index: 1;
+    }
+    .contact-avatar {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold) 0%, #E8A84C 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; font-weight: 900; color: var(--dark);
+    }
+    .contact-info { text-align: left; }
+    .contact-info .name { font-size: 1rem; font-weight: 700; color: var(--white); }
+    .contact-info .role { font-size: 0.8rem; color: #9CA3AF; margin-top: 0.1rem; }
+    .contact-info .email { font-size: 0.82rem; color: var(--gold); margin-top: 0.4rem; }
+    .cta-buttons { display: flex; gap: 1rem; justify-content: center; margin-top: 1.75rem; position: relative; z-index: 1; }
+
+    /* ── Highlight Banner ── */
+    .banner {
+      background: linear-gradient(90deg, rgba(201,168,76,0.12) 0%, rgba(201,168,76,0.04) 100%);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: var(--radius); padding: 1.5rem 2rem;
+      display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
+    }
+    .banner-icon { font-size: 2rem; }
+    .banner-text h4 { color: #111; margin-bottom: 0.25rem; }
+    .banner-text p { font-size: 0.85rem; color: #555; }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--dark); border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 2rem; text-align: center;
+    }
+    footer p { font-size: 0.78rem; color: #6B7280; }
+    footer strong { color: #9CA3AF; }
+
+    /* ── Utilities ── */
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 1rem; }
+    .mt-3 { margin-top: 1.5rem; }
+    .mt-4 { margin-top: 2rem; }
+    .mb-2 { margin-bottom: 1rem; }
+    .mb-3 { margin-bottom: 1.5rem; }
+    .text-gold { color: var(--gold); }
+    .text-sm { font-size: 0.82rem; }
+    .text-xs { font-size: 0.72rem; }
+    .font-bold { font-weight: 700; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .hero-grid, .grid-2, .calc-grid { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+      .flow { grid-template-columns: 1fr 1fr; }
+      .flow::before { display: none; }
+      nav { padding: 0 1rem; }
+      .nav-links { display: none; }
+    }
+  </style>
+  <style>
+    .light-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; background: #fff; border-radius: 14px; overflow: hidden; border: 1px solid #E5E7EB; }
+    .light-table th { padding: 0.9rem 1.1rem; text-align: left; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #6B7280; background: #F9FAFB; border-bottom: 1px solid #E5E7EB; }
+    .light-table td { padding: 0.9rem 1.1rem; font-size: 0.9rem; color: #111; border-bottom: 1px solid #F3F4F6; font-variant-numeric: tabular-nums; }
+    .light-table td:not(:first-child), .light-table th:not(:first-child) { text-align: right; }
+    .light-table tr.hl td { background: #FDF3D7; font-weight: 700; }
+    .cond-list { list-style: none; display: grid; gap: 0.85rem; margin-top: 1.25rem; }
+    .cond-list li { display: flex; gap: 0.85rem; align-items: flex-start; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; color: #D1D5DB; font-size: 0.92rem; }
+    .cond-list li .n { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--gold); color: var(--dark); font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; }
+    .cond-list li strong { color: var(--white); }
+    .benefit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .benefit { background: var(--white); border: 1px solid #E5E7EB; border-radius: 14px; padding: 1.25rem 1.4rem; }
+    .benefit .v { font-size: 1.35rem; font-weight: 900; color: #111; letter-spacing: -0.02em; }
+    .benefit .v span { color: var(--gold); }
+    .benefit .l { font-size: 0.82rem; color: #555; margin-top: 0.25rem; }
+    .deadline { display: inline-flex; align-items: center; gap: 0.5rem; background: #111; color: var(--gold); font-weight: 800; font-size: 0.85rem; padding: 0.5rem 1rem; border-radius: 999px; margin-top: 1rem; }
+    .table-scroll { overflow-x: auto; }
+    @media (max-width: 768px) {
+      .benefit-grid { grid-template-columns: 1fr; }
+      .section { padding: 4rem 1rem; }
+      .cta-card { padding: 2.5rem 1.25rem; }
+      .contact-card { flex-direction: column; padding: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════ NAV ══════════ -->
+<nav>
+  <div class="nav-brand">
+    <span class="jeeves-logo">Jeeves</span>
+    <div class="nav-divider"></div>
+    <span class="nav-client client-name">Travel Services</span>
+  </div>
+  <div class="nav-links">
+    <a href="#sec-transfer">Pagos al exterior</a>
+    <a href="#sec-tarjetas">Tarjetas & Cashback</a>
+    <a href="#sec-fondeo">Fondeo</a>
+    <a href="#sec-calc">Calculadora</a>
+  </div>
+  <a href="#sec-beneficio" class="nav-cta">Beneficio octubre →</a>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<section id="sec-hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-label">Jeeves × <span class="client-name">Travel Services</span> · Propuesta Argentina · Octubre 2026</div>
+        <h1 class="hero-title">
+          Pagos internacionales sin comisiones.<br>
+          <em>Cada pago con tarjeta, con cashback sin tope de reintegro.</em>
+        </h1>
+        <p class="hero-subtitle">
+          Actualmente, cada transferencia al exterior vía COMEX representa un costo de USD 25–30 y exige documentación respaldatoria por reserva. Jeeves centraliza los pagos a proveedores internacionales en una única plataforma, por transferencia o con tarjeta corporativa en USD, permitiendo seleccionar en cada operación el medio de pago más eficiente.
+        </p>
+        <div class="hero-cta-group">
+          <a href="#sec-calc" class="btn-primary">Calcular el ahorro →</a>
+          <a href="#sec-beneficio" class="btn-ghost">Ver condiciones comerciales (hasta el 21/10) ↓</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="num">US$0</div>
+            <div class="lbl">Por transferencia internacional</div>
+          </div>
+          <div class="hero-stat">
+            <div class="num">2%</div>
+            <div class="lbl">Cashback sin tope · primeros 3 meses</div>
+          </div>
+          <div class="hero-stat">
+            <div class="num">US$0</div>
+            <div class="lbl">Plataforma año 1 (valor USD 3.500)</div>
+          </div>
+          <div class="hero-stat">
+            <div class="num">SWIFT · ACH</div>
+            <div class="lbl">Fedwire y SEPA, con comprobante por pago</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="jcard">
+          <div class="jcard-top">
+            <span class="jcard-logo">Jeeves</span>
+            <span class="jcard-elite">USD</span>
+          </div>
+          <div class="jcard-mid">
+            <div class="jcard-chip"></div>
+            <span class="jcard-wave">〣</span>
+          </div>
+          <div class="jcard-number">5399 &nbsp;••••&nbsp; •••• &nbsp;4821</div>
+          <div class="jcard-bottom">
+            <div class="jcard-holder">
+              <div class="lbl">Tarjeta virtual</div>
+              <div class="val">Hotel · Londres</div>
+            </div>
+            <div class="jcard-exp">
+              <div class="lbl">Válida hasta</div>
+              <div class="val">10/29</div>
+            </div>
+            <div class="jcard-company client-name">Travel Services</div>
+          </div>
+        </div>
+        <p class="jcard-caption">Una <strong>tarjeta virtual por proveedor</strong> · En USD · Sin costo de emisión</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ① TRANSFERENCIAS ══════════ -->
+<section id="sec-transfer" class="section dark">
+  <div class="container">
+    <div class="sec-header">
+      <div class="section-badge">① Pagos al exterior por transferencia</div>
+      <h2>USD 1.500.000 mensuales en 190 transferencias.<br><em>Sin comisiones ni cargos ocultos.</em></h2>
+      <p>Transferencias internacionales vía SWIFT, Fedwire, ACH y SEPA, en dólares y en monedas locales (euros, libras esterlinas, entre otras), con el comprobante bancario correspondiente a cada pago. Sin comisiones por operación, sin cargos ocultos ni extras: el tipo de cambio aplicado se informa antes de confirmar, de modo que el costo total de cada pago es visible desde el inicio.</p>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-dot">📋</div>
+        <h4>Carga del pago</h4>
+        <p>Desde la plataforma, con aprobaciones configurables</p>
+        <div class="flow-time">~ 1 min</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">💱</div>
+        <h4>Tipo de cambio en vivo</h4>
+        <p>Tasa y monto final visibles antes de confirmar</p>
+        <div class="flow-time">En tiempo real</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">🌎</div>
+        <h4>Envío</h4>
+        <p>Pago a proveedores vía SWIFT, Fedwire, ACH o SEPA</p>
+        <div class="flow-time">Sin comisión por operación</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">✅</div>
+        <h4>Comprobante</h4>
+        <p>Comprobante bancario según el rail y conciliación con IA</p>
+        <div class="flow-time">Automático</div>
+      </div>
+    </div>
+
+    <div class="mt-4 table-scroll">
+      <h3 style="color: var(--white); margin-bottom: 0.5rem;">Comparativo frente a las alternativas bancarias evaluadas</h3>
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Opción</th>
+            <th class="col-jeeves">Jeeves</th>
+            <th>Bancos actuales</th>
+            <th>Macro</th>
+            <th>Francés</th>
+            <th>Galicia</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Comisión por transferencia</td>
+            <td class="col-jeeves text-gold font-bold">USD 0</td>
+            <td>USD 25–30</td>
+            <td>USD 25</td>
+            <td>USD 20</td>
+            <td>USD 0</td>
+          </tr>
+          <tr>
+            <td>Costo mensual (190 operaciones)</td>
+            <td class="col-jeeves text-gold font-bold">USD 0</td>
+            <td>USD 4.750–5.700</td>
+            <td>USD 4.750</td>
+            <td>USD 3.800</td>
+            <td>USD 0</td>
+          </tr>
+          <tr>
+            <td>Documentación respaldatoria</td>
+            <td class="col-jeeves"><span class="check">✓</span> Carga digital en plataforma</td>
+            <td><span class="neutral">~</span> Invoice / engorrosa</td>
+            <td><span class="cross">✗</span> Respaldatoria</td>
+            <td><span class="cross">✗</span> Respaldatoria</td>
+            <td><span class="cross">✗</span> Doble documentación</td>
+          </tr>
+          <tr>
+            <td>Pago con tarjeta en USD + cashback</td>
+            <td class="col-jeeves text-gold font-bold">✓ 2% sin tope (3 meses)</td>
+            <td><span class="cross">✗</span></td>
+            <td><span class="cross">✗</span></td>
+            <td><span class="cross">✗</span></td>
+            <td><span class="cross">✗</span></td>
+          </tr>
+          <tr>
+            <td>Comprobante de cada pago</td>
+            <td class="col-jeeves"><span class="check">✓</span> Según el rail (MT103, Fedwire, ACH, SEPA)</td>
+            <td><span class="neutral">~</span></td>
+            <td><span class="neutral">~</span></td>
+            <td><span class="neutral">~</span></td>
+            <td><span class="neutral">~</span></td>
+          </tr>
+          <tr>
+            <td>Soporte</td>
+            <td class="col-jeeves text-gold font-bold">Ejecutiva de cuenta por WhatsApp</td>
+            <td>Mesa de COMEX</td>
+            <td>Mesa de COMEX</td>
+            <td>Mesa de COMEX</td>
+            <td>Mesa de COMEX</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-4 table-scroll">
+      <h3 style="color: var(--white); margin-bottom: 0.5rem;">Comprobante de cada pago, según el rail utilizado</h3>
+      <p class="text-sm">Cada pago cuenta con el comprobante bancario correspondiente al rail por el que se procesa.</p>
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Destino</th>
+            <th style="text-align:left;">Rail</th>
+            <th style="text-align:left;">Comprobante</th>
+            <th style="text-align:left;">Información incluida</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Cuenta bancaria en el exterior</td>
+            <td style="text-align:left;" class="text-gold font-bold">SWIFT</td>
+            <td style="text-align:left;">MT103</td>
+            <td style="text-align:left;">Detalle de la transferencia internacional</td>
+          </tr>
+          <tr>
+            <td>USD → cuenta bancaria en EE. UU.</td>
+            <td style="text-align:left;" class="text-gold font-bold">ACH</td>
+            <td style="text-align:left;">ACH payment confirmation / payment receipt</td>
+            <td style="text-align:left;">Monto, fecha, beneficiario, cuenta y trace number</td>
+          </tr>
+          <tr>
+            <td>USD → cuenta bancaria en EE. UU.</td>
+            <td style="text-align:left;" class="text-gold font-bold">Fedwire</td>
+            <td style="text-align:left;">Fedwire payment confirmation / wire confirmation</td>
+            <td style="text-align:left;">Identificador de la transferencia (IMAD/OMAD)</td>
+          </tr>
+          <tr>
+            <td>EUR → cuenta bancaria en Europa</td>
+            <td style="text-align:left;" class="text-gold font-bold">SEPA</td>
+            <td style="text-align:left;">SEPA payment confirmation / transfer confirmation</td>
+            <td style="text-align:left;">Datos de la operación e identificador de la transferencia</td>
+          </tr>
+          <tr>
+            <td>Otras vías bancarias</td>
+            <td style="text-align:left;" class="text-gold font-bold">Según destino</td>
+            <td style="text-align:left;" colspan="2">El comprobante depende del rail utilizado</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-4">
+      <div class="banner" style="background: rgba(201,168,76,0.08); border-color: rgba(201,168,76,0.2);">
+        <div class="banner-icon">💡</div>
+        <div class="banner-text">
+          <h4 style="color: var(--gold);">Ahorro estimado en comisiones: aproximadamente USD 57.000 anuales</h4>
+          <p style="color: #9CA3AF;">Cálculo: 190 operaciones × USD 25 × 12 meses, tomando como referencia el costo actual por operación.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ② TARJETAS ══════════ -->
+<section id="sec-tarjetas" class="section">
+  <div class="container">
+    <div class="sec-header">
+      <div class="section-badge light">② Tarjetas corporativas en USD · 2% cashback</div>
+      <h2>La tarjeta corporativa<br><em>como fuente de retorno.</em></h2>
+      <p>Para proveedores internacionales que aceptan tarjeta (hotelería, receptivo, turismo estudiantil y eventos), la tarjeta Jeeves en USD es el medio de pago más eficiente: sin comisiones y con un 2% de cashback sin tope durante los primeros tres meses. Se fondea directamente con los dólares de la compañía, sin necesidad de operar con dólar billete.</p>
+    </div>
+
+    <div class="table-scroll">
+      <h3 style="margin-bottom: 0.25rem;">Un pago de USD 15.000 a un proveedor del exterior</h3>
+      <table class="light-table">
+        <thead>
+          <tr><th>Forma de pago</th><th>Costo</th><th>Documentación</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Transferencia COMEX (bancos actuales)</td><td>USD 25–30</td><td>Respaldatoria por reserva</td></tr>
+          <tr><td>Transferencia Jeeves</td><td>USD 0</td><td>Carga digital</td></tr>
+          <tr class="hl"><td>Tarjeta Jeeves (2% cashback)</td><td>+ USD 300 de devolución</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2 mt-4">
+      <div class="feat-card-light">
+        <div class="feat-icon">💳</div>
+        <h4>Una tarjeta virtual por proveedor</h4>
+        <p>Emisión ilimitada y sin costo. Una tarjeta por hotel, grupo de viaje o evento: cada consumo queda asociado a su reserva, simplificando la conciliación de facturas que agrupan múltiples reservas. Compatibles con Apple Pay y Google Pay.</p>
+      </div>
+      <div class="feat-card-light">
+        <div class="feat-icon">🛂</div>
+        <h4>Tarjetas físicas y virtuales con límites a medida</h4>
+        <p>Hasta 10 tarjetas físicas sin costo y tarjetas virtuales ilimitadas, ambas con límites configurables por usuario y por categoría (aéreos, comidas, hotelería) para coordinadores de viajes y eventos.</p>
+      </div>
+      <div class="feat-card-light">
+        <div class="feat-icon">🤖</div>
+        <h4>Comprobantes por WhatsApp con IA</h4>
+        <p>Con cada consumo, el titular recibe una notificación por WhatsApp para enviar la factura. El sistema la procesa, la registra y justifica el gasto automáticamente, eliminando la carga manual de cierre de mes.</p>
+      </div>
+      <div class="feat-card-light">
+        <div class="feat-icon">🔗</div>
+        <h4>Integración con ERP</h4>
+        <p>Integraciones disponibles con los principales ERPs y acompañamiento del equipo de Jeeves para otros sistemas.</p>
+      </div>
+    </div>
+
+    <div class="mt-4 table-scroll">
+      <h3 style="margin-bottom: 0.25rem;">Retorno estimado en los primeros tres meses</h3>
+      <p class="text-sm" style="color:#555;">Sobre el gasto actual con tarjeta de USD 60.800 mensuales y USD 1.500.000 mensuales en transferencias · 2% de cashback sin tope</p>
+      <table class="light-table">
+        <thead>
+          <tr><th>Escenario</th><th>Volumen mensual con tarjeta</th><th>Cashback mensual</th><th>Total 3 meses</th></tr>
+        </thead>
+        <tbody>
+          <tr class="hl"><td>Gasto actual con tarjeta</td><td>USD 60.800</td><td>USD 1.216</td><td>USD 3.648</td></tr>
+          <tr><td>+ 10% de las transferencias pasan a tarjeta</td><td>USD 210.800</td><td>USD 4.216</td><td>USD 12.648</td></tr>
+          <tr><td>+ 20% de las transferencias pasan a tarjeta</td><td>USD 360.800</td><td>USD 7.216</td><td>USD 21.648</td></tr>
+        </tbody>
+      </table>
+      <p class="text-xs mt-2" style="color:#6B7280;">Cada semana de demora en la activación tiene un costo de oportunidad: con el gasto actual de USD 60.800 mensuales en tarjeta, el cashback equivale a aproximadamente USD 280 por semana; si además un 10% de las transferencias se canaliza con tarjeta, asciende a cerca de USD 970 por semana.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ③ FONDEO ══════════ -->
+<section id="sec-fondeo" class="section dark-alt">
+  <div class="container">
+    <div class="sec-header">
+      <div class="section-badge">③ Fondeo de la cuenta</div>
+      <h2>Fondeo en pesos o en dólares,<br><em>según su conveniencia.</em></h2>
+      <p>La cuenta Jeeves se encuentra a nombre de la compañía y admite fondeo en ARS o en USD, según la estrategia de tesorería en cada momento.</p>
+    </div>
+    <div class="grid-2">
+      <div class="feat-card" style="border-color: rgba(201,168,76,0.35);">
+        <div class="feat-icon">🇦🇷</div>
+        <h4>En pesos · acreditación instantánea</h4>
+        <p>Vía CVU a nombre de la compañía, con visibilidad en tiempo real del tipo de cambio y del monto en dólares a acreditar antes de confirmar.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🇺🇸</div>
+        <h4>En dólares · desde el exterior</h4>
+        <p>Desde su cuenta en el exterior hacia la cuenta Jeeves en USD. Las transferencias internacionales vía SWIFT se acreditan en un plazo de 1 a 3 días hábiles.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ④ BENEFICIO ══════════ -->
+<section id="sec-beneficio" class="section" style="background:#F3F4F6;">
+  <div class="container">
+    <div class="sec-header">
+      <div class="section-badge light">④ Beneficio de lanzamiento · Octubre 2026</div>
+      <h2>Condiciones comerciales <em>de lanzamiento.</em></h2>
+      <p>Completando el onboarding <strong>antes del 21 de octubre de 2026</strong> y con pagos con tarjeta superiores a USD 50.000 mensuales durante los tres meses siguientes, Travel Services accede a:</p>
+      <p class="text-sm" style="color:#111; font-weight:600; margin-top:0.5rem;">⚠️ Estas condiciones aplican únicamente si el onboarding se completa antes del 21 de octubre de 2026.</p>
+    </div>
+
+    <div class="benefit-grid">
+      <div class="benefit"><div class="v">Opening fee <span>bonificado</span></div><div class="l">Alta de la cuenta sin costo (valor USD 350)</div></div>
+      <div class="benefit"><div class="v">Servicio de <span>onboarding</span></div><div class="l">Acompañamiento en la implementación</div></div>
+      <div class="benefit"><div class="v"><span>US$0</span> transacciones</div><div class="l">Pagos por transferencia y con tarjeta</div></div>
+      <div class="benefit"><div class="v"><span>Ilimitadas</span></div><div class="l">Tarjetas virtuales sin costo</div></div>
+      <div class="benefit"><div class="v">Hasta <span>10</span></div><div class="l">Tarjetas físicas sin costo</div></div>
+      <div class="benefit"><div class="v"><span>100%</span> bonificada</div><div class="l">Plataforma oct 2026 – oct 2027 (anualidad USD 3.500)</div></div>
+    </div>
+
+    <div class="mt-3" style="background: var(--dark); border-radius: 20px; padding: 2rem;">
+      <div style="font-size: 2.6rem; font-weight: 900; color: var(--gold); letter-spacing: -0.04em;">2% cashback <span style="color:#fff; font-size:1.1rem; font-weight:700;">sin tope · primeros 3 meses</span></div>
+      <p style="color:#9CA3AF; margin-top:0.4rem;">Sujeto a completar el onboarding antes del 21 de octubre y al uso de tarjeta para pagos superiores a USD 50.000 mensuales durante tres meses consecutivos.</p>
+
+      <h3 style="color: var(--white); margin-top: 2rem;">Condiciones para acceder al beneficio</h3>
+      <ul class="cond-list">
+        <li><span class="n">1</span><span><strong>Onboarding completo antes del 21 de octubre de 2026.</strong> Pasada esa fecha, las condiciones de lanzamiento no aplican.</span></li>
+        <li><span class="n">2</span><span><strong>Arranque en octubre con 3–4 proveedores que acepten tarjeta</strong>, para que el cashback corra desde el primer mes.</span></li>
+        <li><span class="n">3</span><span><strong>Uso de tarjeta mayor a USD 50.000 por mes durante 3 meses consecutivos.</strong></span></li>
+      </ul>
+      <div class="deadline">⏳ Fecha límite para completar el onboarding: 21 de octubre de 2026</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ⑤ CALCULADORA ══════════ -->
+<section id="sec-calc" class="section">
+  <div class="container">
+    <div class="sec-header center">
+      <div class="section-badge light">⑤ Simulador</div>
+      <h2>Simulador de ahorro<br><em>con datos reales.</em></h2>
+      <p>Ingrese la cantidad de operaciones, el costo actual, el volumen de transferencias y de gasto con tarjeta, y el porcentaje de transferencias que podrían pasar a tarjeta. El resultado se actualiza automáticamente.</p>
+    </div>
+
+    <div class="calc-wrapper">
+      <div class="calc-header">
+        <h3>💰 Calculadora · <span class="client-name">Travel Services</span> × Jeeves</h3>
+        <span class="badge">Celdas en dorado = editables</span>
+      </div>
+      <div class="calc-body">
+        <div class="calc-grid">
+          <div>
+            <div class="calc-section-title">🌎 Pagos al exterior hoy</div>
+            <div class="calc-field">
+              <label>Transferencias al exterior por mes</label>
+              <div class="calc-input-wrap has-suffix">
+                <input type="number" id="ops" value="190" step="10" class="editable" oninput="calcular()">
+                <span class="suffix">ops/mes</span>
+              </div>
+            </div>
+            <div class="calc-field">
+              <label>Costo actual por transferencia</label>
+              <div class="calc-input-wrap has-prefix has-suffix">
+                <span class="prefix">$</span>
+                <input type="number" id="fee" value="25" step="1" class="editable" oninput="calcular()">
+                <span class="suffix">USD/op</span>
+              </div>
+            </div>
+            <div class="calc-field">
+              <label>Volumen mensual de transferencias al exterior</label>
+              <div class="calc-input-wrap has-prefix has-suffix">
+                <span class="prefix">$</span>
+                <input type="number" id="vol" value="1500000" step="100000" class="editable" oninput="calcular()">
+                <span class="suffix">USD/mes</span>
+              </div>
+            </div>
+            <div class="calc-field">
+              <label>Gasto mensual con tarjeta</label>
+              <div class="calc-input-wrap has-prefix has-suffix">
+                <span class="prefix">$</span>
+                <input type="number" id="card" value="60800" step="1000" class="editable" oninput="calcular()">
+                <span class="suffix">USD/mes</span>
+              </div>
+            </div>
+            <div class="calc-section-title" style="margin-top: 1.5rem;">💳 Con Jeeves</div>
+            <div class="calc-field">
+              <label>% de transferencias que pasarían a tarjeta</label>
+              <div class="calc-input-wrap has-suffix">
+                <input type="number" id="pct" value="0" step="5" min="0" max="100" class="editable" oninput="calcular()">
+                <span class="suffix">%</span>
+              </div>
+              <div class="hint">Proveedores que aceptan tarjeta: hoteles, receptivo, eventos, viajes estudiantiles.</div>
+            </div>
+          </div>
+          <div>
+            <div class="calc-section-title">✅ Resultado · Año 1</div>
+            <div class="calc-results">
+              <h4>Ahorro con Jeeves</h4>
+              <div class="result-row"><span class="result-label">Comisiones actuales por transferencias (12 meses)</span><span class="result-value" id="r_fees">—</span></div>
+              <div class="result-row"><span class="result-label">Comisiones con Jeeves</span><span class="result-value" style="color:#34D399;">US$ 0</span></div>
+              <div class="result-row"><span class="result-label">🎁 Cashback 2% (primeros 3 meses)</span><span class="result-value" id="r_cash" style="color:#34D399;">—</span></div>
+              <div class="result-row"><span class="result-label">⚡ Plataforma bonificada (oct 2026 – oct 2027)</span><span class="result-value" style="color:#34D399;">US$ 3.500</span></div>
+              <div class="result-row"><span class="result-label">🔓 Opening fee bonificado</span><span class="result-value" style="color:#34D399;">US$ 350</span></div>
+              <div style="height: 1px; background: rgba(255,255,255,0.06); margin: 1rem 0;"></div>
+              <div class="result-row highlight"><span class="result-label">🏆 Beneficio total año 1</span><span class="result-value" id="r_total">—</span></div>
+            </div>
+            <div style="margin-top: 1.25rem; background: #F9F9F7; border: 1px solid #E5E7EB; border-radius: 12px; padding: 1.25rem;">
+              <p style="font-size: 0.75rem; color: #6B7280;">* Cálculos estimados. El cashback del 2% aplica sobre pagos con tarjeta Jeeves durante los primeros 3 meses, sin tope, sujeto a las condiciones del beneficio de lanzamiento. La plataforma tiene una anualidad de USD 3.500, bonificada al 100% de octubre 2026 a octubre 2027, y el opening fee de USD 350 se bonifica. Los beneficios aplican solo si el onboarding se completa antes del 21 de octubre de 2026.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CTA ══════════ -->
+<section id="sec-cta">
+  <div class="container">
+    <div class="cta-card">
+      <div class="section-badge" style="background: rgba(201,168,76,0.15); border-color: rgba(201,168,76,0.3);">Próximos pasos</div>
+      <h2>Emiliano, le proponemos avanzar con la implementación durante octubre.</h2>
+      <p>A continuación, detallamos los pasos sugeridos para concretar la implementación:</p>
+      <ul class="cond-list" style="text-align:left; max-width:760px; margin:1.75rem auto 0; position:relative; z-index:1;">
+        <li><span class="n">1</span><span><strong>Demostración de la plataforma.</strong> De considerarlo necesario, coordinaremos una demostración web de 30 minutos en la fecha y el horario que resulten más convenientes para su equipo.</span></li>
+        <li><span class="n">2</span><span><strong>Inicio y finalización del onboarding antes del 21 de octubre de 2026.</strong> El equipo de Jeeves brindará asesoramiento y acompañamiento durante todo el proceso, a fin de que la documentación se presente en tiempo y forma.</span></li>
+        <li><span class="n">3</span><span><strong>Primeros pagos con tarjeta durante octubre.</strong> Además de habilitar el cashback desde el primer mes, permitirán dejar confirmadas las condiciones comerciales acordadas: la bonificación del opening fee y de la plataforma, y la tarifa de US$0 por transacción.</span></li>
+      </ul>
+
+      <div class="contact-card">
+        <div class="contact-avatar">MS</div>
+        <div class="contact-info">
+          <div class="name">Maria Sabatella Sanguinetti</div>
+          <div class="role">Account Executive · Jeeves</div>
+          <div class="email">maria.sanguinetti@tryjeeves.com</div>
+        </div>
+      </div>
+
+      <div class="cta-buttons">
+        <a href="mailto:maria.sanguinetti@tryjeeves.com?subject=Jeeves%20%C2%B7%20Coordinemos%20la%20demostraci%C3%B3n&body=Hola%20Maria%2C%20nos%20interesa%20avanzar%20con%20la%20propuesta%20de%20Jeeves.%20Coordinemos%20la%20demostraci%C3%B3n." class="btn-primary">✓ Coordinar la demostración</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>
+    <strong>Jeeves</strong> · tryjeeves.com · Propuesta pagos al exterior + tarjetas corporativas · <span class="client-name">Travel Services</span> · Argentina<br>
+    <span style="margin-top: 0.3rem; display: inline-block;">Elaborado por Maria Sabatella Sanguinetti · Jeeves</span>
+  </p>
+</footer>
+
+<script>
+  // ✏️ Cambiá acá el nombre de la empresa del cliente (se actualiza en toda la propuesta)
+  const CLIENTE = "Travel Services";
+  document.querySelectorAll('.client-name').forEach(el => el.textContent = CLIENTE);
+  document.title = "Jeeves — Propuesta · " + CLIENTE;
+
+  function fmtUSD(n) {
+    return 'US$ ' + new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 }).format(n);
+  }
+  function calcular() {
+    const ops = parseFloat(document.getElementById('ops').value) || 0;
+    const fee = parseFloat(document.getElementById('fee').value) || 0;
+    const vol = parseFloat(document.getElementById('vol').value) || 0;
+    const card = parseFloat(document.getElementById('card').value) || 0;
+    const pct = Math.min(Math.max(parseFloat(document.getElementById('pct').value) || 0, 0), 100) / 100;
+    const fees = ops * fee * 12;
+    const cash = (card + vol * pct) * 0.02 * 3;
+    const plataforma = 3500 + 350;
+    document.getElementById('r_fees').textContent = fmtUSD(fees);
+    document.getElementById('r_cash').textContent = fmtUSD(cash);
+    document.getElementById('r_total').textContent = fmtUSD(fees + cash + plataforma);
+  }
+  calcular();
+</script>
+</body>
+</html>
